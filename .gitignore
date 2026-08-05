@@ -1,0 +1,22 @@
+# Large artifacts live OUTSIDE OneDrive (see src/sextant/paths.py).
+# Nothing heavy should ever land in the repo tree, but guard anyway.
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+*.egg-info/
+
+# Never sync data/checkpoints/corpus even if a path is misconfigured.
+data/
+checkpoints/
+corpus/
+tokenized/
+*.bin
+*.npy
+*.pt
+*.ckpt
+*.safetensors
+*.arrow
+
+# Local machine paths file (developer-specific overrides)
+.sextant_local.yaml

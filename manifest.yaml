@@ -1,0 +1,147 @@
+# Sextant Core manifest. Values marked TO_FILL are populated during
+# implementation; the freeze gate (PROTOCOL_v3.md section 22) requires
+# every TO_FILL to be resolved and every hash recorded.
+protocol:
+  name: sextant_core
+  version: "3.0"
+  status: preregistration_draft   # -> frozen at the gate
+  protocol_sha256: TO_FILL
+  repository_commit: TO_FILL
+
+attribution_frame:
+  hypothesis_labels:
+    H1: matched_budget_implementation
+    H2: selected_algebraic_structure_vs_selected_monarch_control
+    H3: cocycle_twisted_law
+  prohibited_labels: [generic_structure, algebra_vs_sparsity, noncommutativity_proves_order]
+
+algebra:
+  component_count: 8
+  basis_order: [1, e1, e2, e12, e3, e13, e23, e123]
+  grade_map: [0, 1, 1, 2, 1, 2, 2, 3]
+  action: left_multiplication
+  cocycle: "B(x,y) = sum_{j<i} x_i y_j mod 2"
+  structure_tensor_builder: reference/structure_tensor.py
+  structure_tensor_sha256_C: TO_FILL
+  structure_tensor_sha256_D: TO_FILL
+  rank_catalogue_verifier: reference/verify_algebra.py
+
+data_contract:
+  corpus: HuggingFaceFW/fineweb-edu
+  configuration: sample-10BT
+  revision_hash: TO_FILL_AT_DOWNLOAD
+  train_tokens_per_run: 2_000_000_000
+  validation_tokens: 20_000_000
+  split_manifest_sha256: TO_FILL
+  tokenizer: gpt2_bpe_50257
+  tokenizer_sha256: TO_FILL
+  sequence_length: 1024
+  packing: contiguous_eos_separated_causal_only
+  comparative_seeds: [1, 2, 3]
+  replacement_seed_reserve: [11, 12, 13]
+  smoke_data_disjoint: true
+
+model_policy:
+  depth_blocks: 8
+  head_dim: 64
+  d_ff_multiplier: 4
+  architecture: prenorm_transformer_rope
+  constrained_set: [wq, wk, wv, wo, mlp_in, mlp_out]
+  embeddings: {tied_with_head: true, precision: fp16, in_constrained_budget: false}
+  divisibility: {d_model_by_8: true, d_ff_by_8: true, head_dim_by_8: true}
+  layout:
+    components_contiguous: true
+    no_group_crosses_head_boundary: true
+    residual_component_alignment: true
+    tensor_parallel_split_of_group: prohibited
+
+budgets:
+  target_actual_constrained_bytes: {low: 2_500_000, high: 10_000_000}
+  maximum_relative_mismatch: 0.01
+  dimension_search: minimize_abs_byte_gap_over_d_model_multiples_of_8_tiebreak_smaller
+  dimension_search_algorithm_sha256: TO_FILL
+  model_cells:   # populated by the frozen solver once the packer exists
+    A_low:  {d_model: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
+    B_low:  {factors: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
+    C_low:  {d_model: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
+    D_low:  {d_model: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
+    A_high: {d_model: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
+    B_high: {factors: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
+    C_high: {d_model: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
+    D_high: {d_model: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
+
+packer:
+  trit_encoding: base243_five_trits_per_byte
+  tensor_order: row_major_O_I_8
+  alignment_bytes: 64
+  scale: {granularity: per_constrained_tensor, dtype: fp16}
+  header: json_with_per_tensor_offsets_and_shapes
+  serializer_sha256: TO_FILL
+  deserializer_sha256: TO_FILL
+
+training:
+  optimizer: adamw
+  betas: [0.9, 0.95]
+  eps: 1.0e-8
+  weight_decay: {value: 0.1, applies_to: constrained_shadow_tensors_only}
+  grad_clip: 1.0
+  schedule: {warmup_fraction: 0.02, decay: cosine, min_lr_fraction_of_peak: 0.10}
+  effective_batch_tokens: 500_000
+  precision: bf16_autocast_fp32_master
+  checkpoint_every_tokens: 200_000_000
+  eval_every_tokens: 100_000_000
+  checkpoint_selection: best_validation_loss
+  init: {law: normal_std_0.02, residual_scale: inv_sqrt_2_depth, cd_paired_draws: true}
+  lr_fairness_stage:
+    grid_peak_lr: [1.0e-3, 2.0e-3, 4.0e-3]
+    smoke_tokens_per_point: 100_000_000
+    selection_rule: lowest_smoke_val_loss_tiebreak_lower_lr
+    selected_peak_lr:
+      A_low: TO_FILL
+      B_low: TO_FILL
+      C_low: TO_FILL
+      D_low: TO_FILL
+      A_high: TO_FILL
+      B_high: TO_FILL
+      C_high: TO_FILL
+      D_high: TO_FILL
+
+probe:
+  items: 200
+  templates: 20
+  variants_per_template: 10
+  schema_facts: 24
+  task: multilabel_fact_assertion
+  representation: {layer: block_4_output, pooling: mean, checkpoint: selected}
+  readout: {method: ridge, lambda: 1.0, features: standardized}
+  metric: macro_f1
+  split: {train_templates: 12, eval_templates: 8, by: template_id}
+  bootstrap: {replicates: 10000, cluster: template_id, ci: 0.95, role: descriptive_only}
+  minimum_effect_f1_points: 3
+  generator_seed: TO_FILL
+  generator_sha256: TO_FILL
+
+decision_rule:
+  margin_relative: 0.02
+  sign_consistency: all_three_seeds
+  equivalence_band_relative: 0.02
+  both_budgets_required_for_scaleup: true
+  p_values_for_loss_decision: prohibited
+  analysis_code_sha256: TO_FILL
+
+failure_handling:
+  nan_or_overflow: invalidate_run
+  replacement: one_seed_from_reserve_in_order
+  failed_runs: retained_in_ledger_marked_invalid
+  interrupted_runs: resume_from_checkpoint_else_failed
+
+leakage_control:
+  comparative_start_requires_all_arms: true
+  comparative_curves_before_freeze: prohibited
+  smoke_in_analysis: prohibited
+  post_freeze_hyperparameter_change: prohibited
+  post_freeze_code_change: invalidates_affected_family_and_bumps_version
+
+freeze_gate:
+  authorized_by_owner: false   # flip only with explicit sign-off
+  authorized_utc: TO_FILL

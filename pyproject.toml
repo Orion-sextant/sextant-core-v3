@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "sextant-core"
+version = "3.0.0"
+description = "Sextant Core: four-arm matched-budget pre-registered algebra-ternary LM experiment"
+requires-python = ">=3.10"
+dependencies = [
+    "torch>=2.4",
+    "numpy>=1.24",
+    "pyyaml>=6.0",
+    "scikit-learn>=1.3",   # ridge readout, standardization
+    "datasets>=2.19",      # FineWeb-Edu streaming
+    "tokenizers>=0.19",    # GPT-2 BPE
+    "safetensors>=0.4",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
+filterwarnings = ["ignore::DeprecationWarning"]
