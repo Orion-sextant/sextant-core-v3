@@ -73,10 +73,17 @@ def compute_layout(specs: list[ExportSpec], *, arm: str, d_model) -> Layout:
 # --------------------------------------------------------------------------
 # Analytic specs for a cell (mirror the transformer's constrained modules)
 # --------------------------------------------------------------------------
+def _attn_inner(d_model: int) -> int:
+    import math
+    n_heads = max(1, math.floor(d_model / 64 + 0.5))  # v3.1: half rounds up
+    return n_heads * 64
+
+
 def _cell_maps(d_model: int):
     d, ff = d_model, 4 * d_model
-    per_block = [("wq", d, d), ("wk", d, d), ("wv", d, d), ("wo", d, d),
-                 ("mlp_in", d, ff), ("mlp_out", ff, d)]  # (name, in, out)
+    inner = _attn_inner(d_model)                       # v3.1 decoupled inner dim
+    per_block = [("wq", d, inner), ("wk", d, inner), ("wv", d, inner),
+                 ("wo", inner, d), ("mlp_in", d, ff), ("mlp_out", ff, d)]  # (name, in, out)
     for blk in range(8):
         for name, i, o in per_block:
             yield f"blk{blk}.{name}", i, o

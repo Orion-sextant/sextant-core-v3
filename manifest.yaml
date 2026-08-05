@@ -3,7 +3,8 @@
 # every TO_FILL to be resolved and every hash recorded.
 protocol:
   name: sextant_core
-  version: "3.0"
+  version: "3.1"                   # v3.0 + owner-authorized cell-policy amendment
+  amendment: docs/PROTOCOL_v3.1_amendment.md   # decouples attn inner dim from d_model
   status: preregistration_draft   # -> frozen at the gate
   protocol_sha256: TO_FILL
   repository_commit: TO_FILL
@@ -48,11 +49,16 @@ model_policy:
   architecture: prenorm_transformer_rope
   constrained_set: [wq, wk, wv, wo, mlp_in, mlp_out]
   embeddings: {tied_with_head: true, precision: fp16, in_constrained_budget: false}
-  divisibility: {d_model_by_8: true, d_ff_by_8: true, head_dim_by_8: true}
+  # v3.1: attention inner dim decoupled from d_model.
+  attention:
+    n_heads_rule: floor(d_model/64 + 0.5)   # half rounds up
+    attn_inner: n_heads*64                   # Q,K,V: d_model->inner; O: inner->d_model
+  divisibility: {d_model_by_8: [C, D], d_ff_by_8: true, head_dim_by_8: true, attn_inner_by_8: true}
   layout:
     components_contiguous: true
     no_group_crosses_head_boundary: true
     residual_component_alignment: true
+    attn_inner_divisible_by_8: true          # v3.1 layout invariant
     tensor_parallel_split_of_group: prohibited
 
 budgets:
@@ -60,15 +66,15 @@ budgets:
   maximum_relative_mismatch: 0.01
   dimension_search: minimize_abs_byte_gap_over_d_model_multiples_of_8_tiebreak_smaller
   dimension_search_algorithm_sha256: TO_FILL
-  model_cells:   # populated by the frozen solver once the packer exists
-    A_low:  {d_model: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
-    B_low:  {factors: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
-    C_low:  {d_model: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
-    D_low:  {d_model: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
-    A_high: {d_model: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
-    B_high: {factors: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
-    C_high: {d_model: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
-    D_high: {d_model: TO_FILL, actual_constrained_bytes: TO_FILL, cell_sha256: TO_FILL}
+  model_cells:   # FROZEN by the v3.1 solver (docs/PROTOCOL_v3.1_amendment.md)
+    A_low:  {d_model: 356, n_heads: 6, attn_inner: 384, actual_constrained_bytes: 2506324, rel_err: +0.00253, cell_sha256: 06d572c42c840dd8e488c3304fcfd819}
+    B_low:  {d_model: 1472, n_heads: 23, attn_inner: 1472, actual_constrained_bytes: 2508389, rel_err: +0.00336, monarch_grid_g_per_map: choose_blocks, cell_sha256: ef6c0d7346b9fda3a4b2fdd62dafeecf}
+    C_low:  {d_model: 1016, n_heads: 16, attn_inner: 1024, actual_constrained_bytes: 2492789, rel_err: -0.00288, cell_sha256: 9c5891a298c99c36e2f4e2f570181c31}
+    D_low:  {d_model: 1016, n_heads: 16, attn_inner: 1024, actual_constrained_bytes: 2492837, rel_err: -0.00287, cell_sha256: d494f2be34eebdead885aaf9680ed3da}
+    A_high: {d_model: 725, n_heads: 11, attn_inner: 704, actual_constrained_bytes: 10002070, rel_err: +0.00021, cell_sha256: aca2a4715bec8090de29ec8e05331c68}
+    B_high: {d_model: 2800, n_heads: 44, attn_inner: 2816, actual_constrained_bytes: 10077570, rel_err: +0.00776, monarch_grid_g_per_map: choose_blocks, cell_sha256: 035baaf095e0e03b9c430f73d3aead08}
+    C_high: {d_model: 2040, n_heads: 32, attn_inner: 2048, actual_constrained_bytes: 10009015, rel_err: +0.00090, cell_sha256: b6086457dacb4c023a71f87473c8a4d2}
+    D_high: {d_model: 2040, n_heads: 32, attn_inner: 2048, actual_constrained_bytes: 10009063, rel_err: +0.00091, cell_sha256: 3a0a5a6c64c0962ada7a2ec91267c8b8}
 
 packer:
   trit_encoding: base243_five_trits_per_byte

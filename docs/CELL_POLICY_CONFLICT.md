@@ -1,9 +1,13 @@
-# P0 conflict: budget grid vs 64-dim head integrality (owner decision required)
+# P0 conflict: budget grid vs 64-dim head integrality (RESOLVED in v3.1)
 
-**Status:** blocks freezing the eight model cells (build item 6) and therefore the
-LR fairness stage (item 9). Flagged per brief rule 5 ("No silent deviations")
-and the entry-point instruction ("the protocol governs; stop and flag the
-conflict instead of resolving it silently").
+**Status:** RESOLVED. The owner authorized Option 1 (decouple the attention
+inner dim from d_model); see [PROTOCOL_v3.1_amendment.md](PROTOCOL_v3.1_amendment.md).
+All 8 cells are now frozen within ±1%. The analysis below is retained as the
+audit trail for why the amendment was necessary.
+
+Originally flagged per brief rule 5 ("No silent deviations") and the entry-point
+instruction ("the protocol governs; stop and flag the conflict instead of
+resolving it silently").
 
 ## The conflict
 

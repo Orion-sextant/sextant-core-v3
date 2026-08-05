@@ -34,8 +34,16 @@ class ModelArgs:
 
     @property
     def n_heads(self) -> int:
-        assert self.d_model % self.head_dim == 0, "d_model must be divisible by head_dim"
-        return self.d_model // self.head_dim
+        # Protocol v3.1 (owner-authorized amendment): attention inner dim is
+        # decoupled from d_model. head_dim stays 64; n_heads = round(d_model/64)
+        # with HALF ROUNDING UP (floor(x + 0.5), not banker's rounding), so the
+        # attention inner dim is n_heads*64 (>= 64), independent of the
+        # multiples-of-8 d_model. See docs/PROTOCOL_v3.1_amendment.md.
+        return max(1, math.floor(self.d_model / self.head_dim + 0.5))
+
+    @property
+    def attn_inner(self) -> int:
+        return self.n_heads * self.head_dim
 
     @property
     def d_ff(self) -> int:
@@ -59,14 +67,16 @@ class Attention(nn.Module):
     def __init__(self, args: ModelArgs, gen: torch.Generator | None):
         super().__init__()
         self.args = args
-        d, resid_std = args.d_model, args.init_std * (2 * args.depth) ** -0.5
-        self.wq = build_constrained(args.arm, d, d, generator=gen, twist=args.twist,
+        d, inner = args.d_model, args.attn_inner
+        resid_std = args.init_std * (2 * args.depth) ** -0.5
+        # v3.1: Q/K/V are d_model -> inner; O is inner -> d_model.
+        self.wq = build_constrained(args.arm, d, inner, generator=gen, twist=args.twist,
                                     init_std=args.init_std, role="wq")
-        self.wk = build_constrained(args.arm, d, d, generator=gen, twist=args.twist,
+        self.wk = build_constrained(args.arm, d, inner, generator=gen, twist=args.twist,
                                     init_std=args.init_std, role="wk")
-        self.wv = build_constrained(args.arm, d, d, generator=gen, twist=args.twist,
+        self.wv = build_constrained(args.arm, d, inner, generator=gen, twist=args.twist,
                                     init_std=args.init_std, role="wv")
-        self.wo = build_constrained(args.arm, d, d, generator=gen, twist=args.twist,
+        self.wo = build_constrained(args.arm, inner, d, generator=gen, twist=args.twist,
                                     init_std=resid_std, role="wo")
 
     def forward(self, x, cos, sin):
