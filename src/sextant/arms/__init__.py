@@ -1,5 +1,6 @@
 """Sextant arms subpackage. Importing this registers all arm factories."""
 from . import arm_a_dense  # noqa: F401  (registers "A")
+from . import arm_cd_algebra  # noqa: F401  (registers "C" and "D")
 from .base import ConstrainedLinear, QuantizedExport, build_constrained, register_arm
 
 __all__ = ["ConstrainedLinear", "QuantizedExport", "build_constrained", "register_arm"]
