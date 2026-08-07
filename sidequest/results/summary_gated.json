@@ -1,0 +1,10 @@
+{
+  "ab_order/C_twist": 0.5635,
+  "ab_order/D_untwist": 0.5387,
+  "ab_order/scalar_prod": 0.4893,
+  "ab_order/gru": 1.0,
+  "swap_parity/C_twist": 0.5231,
+  "swap_parity/D_untwist": 0.5183,
+  "swap_parity/scalar_prod": 0.571,
+  "swap_parity/gru": 0.5212
+}
