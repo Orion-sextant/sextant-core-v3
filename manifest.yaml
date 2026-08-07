@@ -103,14 +103,14 @@ training:
     smoke_tokens_per_point: 100_000_000
     selection_rule: lowest_smoke_val_loss_tiebreak_lower_lr
     selected_peak_lr:
-      A_low: TO_FILL
-      B_low: TO_FILL
-      C_low: TO_FILL
-      D_low: TO_FILL
-      A_high: TO_FILL
-      B_high: TO_FILL
-      C_high: TO_FILL
-      D_high: TO_FILL
+      A_low: 0.001
+      B_low: 0.004
+      C_low: 0.002
+      D_low: 0.001
+      A_high: 0.001
+      B_high: 0.002
+      C_high: 0.002
+      D_high: 0.001
 
 probe:
   items: 200
