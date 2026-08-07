@@ -24,14 +24,16 @@ from tasks import TASKS, VOCAB
 RESULTS = Path(__file__).parent / "results"
 
 
-def build_models(variant: str, seed: int):
+def build_models(variant: str, seed: int, *, pool: str = "final",
+                 readout: str = "linear"):
     out = {}
-    c = AlgebraScanCore(VOCAB, k=16, twist=True, variant=variant, seed=seed)
-    d = AlgebraScanCore(VOCAB, k=16, twist=False, variant=variant, seed=seed)
-    out["C_twist"] = Classifier(c, 16 * 8)
-    out["D_untwist"] = Classifier(d, 16 * 8)
-    out["scalar_prod"] = Classifier(ScalarProductRNN(VOCAB, d=128, seed=seed), 128)
-    out["gru"] = Classifier(TinyGRU(VOCAB, d=48, seed=seed), 48)
+    c = AlgebraScanCore(VOCAB, k=16, twist=True, variant=variant, seed=seed, pool=pool)
+    d = AlgebraScanCore(VOCAB, k=16, twist=False, variant=variant, seed=seed, pool=pool)
+    out["C_twist"] = Classifier(c, 16 * 8, readout=readout)
+    out["D_untwist"] = Classifier(d, 16 * 8, readout=readout)
+    out["scalar_prod"] = Classifier(
+        ScalarProductRNN(VOCAB, d=128, seed=seed, pool=pool), 128, readout=readout)
+    out["gru"] = Classifier(TinyGRU(VOCAB, d=48, seed=seed), 48)  # reference, final+linear
     return out
 
 
@@ -56,22 +58,26 @@ def train_eval(model, task_fn, *, steps: int, T: int, seed: int):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--variant", default="pure", choices=["pure", "gated"])
+    ap.add_argument("--pool", default="final", choices=["final", "mean"])
+    ap.add_argument("--readout", default="linear", choices=["linear", "bilinear"])
     ap.add_argument("--steps", type=int, default=400)
     ap.add_argument("--T", type=int, default=24)
     ap.add_argument("--seeds", type=int, nargs="+", default=[0, 1, 2])
     a = ap.parse_args()
     RESULTS.mkdir(exist_ok=True)
+    tag = f"{a.variant}/{a.pool}/{a.readout}"
 
     rows = []
     for task_name, task_fn in TASKS.items():
         for seed in a.seeds:
-            models = build_models(a.variant, seed)
+            models = build_models(a.variant, seed, pool=a.pool, readout=a.readout)
             for name, m in models.items():
                 acc, dt = train_eval(m, task_fn, steps=a.steps, T=a.T, seed=seed)
-                rows.append({"variant": a.variant, "task": task_name, "model": name,
+                rows.append({"variant": a.variant, "pool": a.pool, "readout": a.readout,
+                             "task": task_name, "model": name,
                              "seed": seed, "acc": round(acc, 4),
                              "params": n_params(m), "train_s": round(dt, 1)})
-                print(f"{a.variant:5} {task_name:11} {name:12} seed{seed} "
+                print(f"{tag:18} {task_name:11} {name:12} seed{seed} "
                       f"acc={acc:.3f} ({n_params(m):,}p, {dt:.0f}s)", flush=True)
 
     with open(RESULTS / "ledger_s1.yaml", "a", encoding="utf-8") as f:
@@ -84,7 +90,7 @@ def main():
     print("\n=== mean acc over seeds ===")
     for (task, model), accs in sorted(agg.items()):
         print(f"  {task:11} {model:12} {sum(accs)/len(accs):.3f}")
-    (RESULTS / f"summary_{a.variant}.json").write_text(json.dumps(
+    (RESULTS / f"summary_{a.variant}_{a.pool}_{a.readout}.json").write_text(json.dumps(
         {f"{t}/{m}": round(sum(v) / len(v), 4) for (t, m), v in agg.items()}, indent=2))
 
 

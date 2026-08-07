@@ -53,3 +53,31 @@ Runs alongside the GPU smoke campaign without competing with it.
 - Never reads smoke or comparative data, bins, or ledgers.
 - Results live only in this folder; the run ledger here is
   `sidequest/results/ledger_s1.yaml`, distinct from the protocol ledgers.
+
+## v0 + follow-up results (pure variant, 3 seeds, ab_order)
+
+| pool / readout | C (twisted) | D (untwisted) | scalar-prod | GRU |
+|---|---|---|---|---|
+| final / linear   | 0.497 | 0.503 | 0.495 | 1.000 |
+| final / bilinear | **0.599** | 0.501 | 0.491 | — |
+| mean / linear    | 0.536 | 0.887 | 0.980 | — |
+| mean / bilinear  | 0.551 | 0.877 | 0.988 | — |
+
+Findings:
+1. **Invariance theorem verified twice**: with final-state readout the untwisted
+   core is at exact chance under BOTH linear and bilinear heads (0.503, 0.501) —
+   no function of its final state can see order, as proved.
+2. **The twist's order information is real and quadratically decodable**: C at
+   0.599 under final/bilinear — the only configuration in which final-state
+   order decoding is possible at all, and only the cocycle provides it.
+3. **Mean-pooling inverts the ranking**: commutative cores become excellent
+   order-timestamp accumulators via prefix products (0.88–0.99), while the
+   twisted core's fast mixing washes out temporal means (0.54–0.55).
+4. A tiny GRU still dominates everything at this scale — gating, not algebra,
+   is the cheap win for order per se.
+
+Interpretation: the cocycle trades **temporal smoothness for state mixing** —
+order survives in the final state (retrievable nonlinearly) but running means
+are destroyed. Natural next architecture: **mixed-algebra channels** (some
+twisted, some untwisted per layer) so the model has both stable accumulators
+and order-carrying mixers; readout over {mean, final} jointly.
