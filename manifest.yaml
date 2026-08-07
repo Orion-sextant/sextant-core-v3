@@ -6,7 +6,7 @@ protocol:
   version: "3.1"                   # v3.0 + owner-authorized cell-policy amendment
   amendment: docs/PROTOCOL_v3.1_amendment.md   # decouples attn inner dim from d_model
   status: preregistration_draft   # -> frozen at the gate
-  protocol_sha256: TO_FILL
+  protocol_sha256: 622de4f0d32df72640910105d4224b40f2e4846489084ec90fa4d9f1bbfe0003
   repository_commit: TO_FILL
 
 attribution_frame:
@@ -23,19 +23,19 @@ algebra:
   action: left_multiplication
   cocycle: "B(x,y) = sum_{j<i} x_i y_j mod 2"
   structure_tensor_builder: reference/structure_tensor.py
-  structure_tensor_sha256_C: TO_FILL
-  structure_tensor_sha256_D: TO_FILL
+  structure_tensor_sha256_C: 713a123162a477fd3ffd65d603f4e1a66f32f890a1ff5b83048389c352d00510
+  structure_tensor_sha256_D: d32b608bfe07048789eb99854f644602b2f102af8952370fd6d98476af34a4da
   rank_catalogue_verifier: reference/verify_algebra.py
 
 data_contract:
   corpus: HuggingFaceFW/fineweb-edu
   configuration: sample-10BT
-  revision_hash: TO_FILL_AT_DOWNLOAD
+  revision_hash: 87f09149ef4734204d70ed1d046ddc9ca3f2b8f9  # HF main revision at freeze-prep; comparative download must pin this
   train_tokens_per_run: 2_000_000_000
   validation_tokens: 20_000_000
   split_manifest_sha256: TO_FILL
   tokenizer: gpt2_bpe_50257
-  tokenizer_sha256: TO_FILL
+  tokenizer_sha256: 1fe93b6152957cf9cfd6d89002467f789ce8b3f3e000b3a2edf27c808ddd0b9e
   sequence_length: 1024
   packing: contiguous_eos_separated_causal_only
   comparative_seeds: [1, 2, 3]
@@ -65,7 +65,7 @@ budgets:
   target_actual_constrained_bytes: {low: 2_500_000, high: 10_000_000}
   maximum_relative_mismatch: 0.01
   dimension_search: minimize_abs_byte_gap_over_d_model_multiples_of_8_tiebreak_smaller
-  dimension_search_algorithm_sha256: TO_FILL
+  dimension_search_algorithm_sha256: ebe71573061e5b937d194391fe680cee70f572246e3869512195803d49f8db71
   model_cells:   # FROZEN by the v3.1 solver (docs/PROTOCOL_v3.1_amendment.md)
     A_low:  {d_model: 356, n_heads: 6, attn_inner: 384, actual_constrained_bytes: 2506324, rel_err: +0.00253, cell_sha256: 06d572c42c840dd8e488c3304fcfd819}
     B_low:  {d_model: 1472, n_heads: 23, attn_inner: 1472, actual_constrained_bytes: 2508389, rel_err: +0.00336, monarch_grid_g_per_map: choose_blocks, cell_sha256: ef6c0d7346b9fda3a4b2fdd62dafeecf}
@@ -82,8 +82,8 @@ packer:
   alignment_bytes: 64
   scale: {granularity: per_constrained_tensor, dtype: fp16}
   header: json_with_per_tensor_offsets_and_shapes
-  serializer_sha256: TO_FILL
-  deserializer_sha256: TO_FILL
+  serializer_sha256: a921a53770aa18f2b3aa28057fc6545ecde90d487f768172b82960f979e50a47
+  deserializer_sha256: 4096e5ffc1b34c95964d65e51399304119b37726d07b05f1228c4f760163e9f9  # base-243 codec; unpack_model lives in serializer (hashed above)
 
 training:
   optimizer: adamw
@@ -124,8 +124,8 @@ probe:
   split: {train_templates: 12, eval_templates: 8, by: template_id}
   bootstrap: {replicates: 10000, cluster: template_id, ci: 0.95, role: descriptive_only}
   minimum_effect_f1_points: 3
-  generator_seed: TO_FILL
-  generator_sha256: TO_FILL
+  generator_seed: 20260806
+  generator_sha256: e435aef637d4241962a25da639e36063aa9fbc296e9cc7a1c50a0171e0a67e9d
 
 decision_rule:
   margin_relative: 0.02
@@ -133,7 +133,7 @@ decision_rule:
   equivalence_band_relative: 0.02
   both_budgets_required_for_scaleup: true
   p_values_for_loss_decision: prohibited
-  analysis_code_sha256: TO_FILL
+  analysis_code_sha256: b7add5e35e39a6a0fb02712210ab476687f2093582e79473d74a0cb631563450
 
 failure_handling:
   nan_or_overflow: invalidate_run
