@@ -1,0 +1,14 @@
+{
+  "corpus": "HuggingFaceFW/fineweb-edu",
+  "config": "sample-10BT",
+  "role": "smoke",
+  "reserved_docs": 111544,
+  "train_bin": "C:\\Users\\jared\\sextant-data\\tokenized\\smoke_train.bin",
+  "train_tokens": 110000000,
+  "train_sha256": "cc4e3b0a061d90924f45adf0f50335895839715f2c788b10e03a5e49847f8b20",
+  "val_bin": "C:\\Users\\jared\\sextant-data\\tokenized\\smoke_val.bin",
+  "val_sha256": "b112120b63edfbfb383b34e64d9107017a370075e538fd246e84bbdd31a05dc3",
+  "tokenizer_sha256": "1fe93b6152957cf9cfd6d89002467f789ce8b3f3e000b3a2edf27c808ddd0b9e",
+  "eos_id": 50256,
+  "note": "comparative preparation must start after reserved_docs to stay disjoint"
+}

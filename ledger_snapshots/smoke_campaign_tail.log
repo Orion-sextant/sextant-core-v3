@@ -1,0 +1,60 @@
+  74,000 docs, 77,996,732/116,000,000 tokens
+  76,000 docs, 80,240,466/116,000,000 tokens
+  78,000 docs, 82,245,809/116,000,000 tokens
+  80,000 docs, 84,267,293/116,000,000 tokens
+  82,000 docs, 86,160,217/116,000,000 tokens
+  84,000 docs, 88,056,921/116,000,000 tokens
+  86,000 docs, 90,087,052/116,000,000 tokens
+  88,000 docs, 92,070,852/116,000,000 tokens
+  90,000 docs, 93,994,345/116,000,000 tokens
+  92,000 docs, 96,088,487/116,000,000 tokens
+  94,000 docs, 98,124,815/116,000,000 tokens
+  96,000 docs, 100,206,401/116,000,000 tokens
+  98,000 docs, 102,365,081/116,000,000 tokens
+  100,000 docs, 104,502,916/116,000,000 tokens
+  102,000 docs, 106,349,458/116,000,000 tokens
+  104,000 docs, 108,375,766/116,000,000 tokens
+  106,000 docs, 110,539,719/116,000,000 tokens
+  108,000 docs, 112,560,875/116,000,000 tokens
+  110,000 docs, 114,481,897/116,000,000 tokens
+[data] prepared 110,000,000 train tokens, reserved_docs=111544
+[campaign] starting 24-run LR fairness stage @ 100,000,000 tokens/point
+[run ] smoke-A-low-lr0.001 (100,000,000 tokens)
+[done] smoke-A-low-lr0.001 val_loss=6.0725 tok/s=149621
+[run ] smoke-A-low-lr0.002 (100,000,000 tokens)
+[done] smoke-A-low-lr0.002 val_loss=6.2918 tok/s=148518
+[run ] smoke-A-low-lr0.004 (100,000,000 tokens)
+[done] smoke-A-low-lr0.004 val_loss=6.2989 tok/s=148244
+[run ] smoke-B-low-lr0.001 (100,000,000 tokens)
+[done] smoke-B-low-lr0.001 val_loss=6.2830 tok/s=23656
+[run ] smoke-B-low-lr0.002 (100,000,000 tokens)
+[done] smoke-B-low-lr0.002 val_loss=6.2486 tok/s=23669
+[run ] smoke-B-low-lr0.004 (100,000,000 tokens)
+[done] smoke-B-low-lr0.004 val_loss=6.1057 tok/s=23682
+[run ] smoke-C-low-lr0.001 (100,000,000 tokens)
+[done] smoke-C-low-lr0.001 val_loss=6.0350 tok/s=33213
+[run ] smoke-C-low-lr0.002 (100,000,000 tokens)
+[done] smoke-C-low-lr0.002 val_loss=6.0335 tok/s=33125
+[run ] smoke-C-low-lr0.004 (100,000,000 tokens)
+[done] smoke-C-low-lr0.004 val_loss=6.0468 tok/s=32936
+[run ] smoke-D-low-lr0.001 (100,000,000 tokens)
+[done] smoke-D-low-lr0.001 val_loss=5.9606 tok/s=32864
+[run ] smoke-D-low-lr0.002 (100,000,000 tokens)
+[done] smoke-D-low-lr0.002 val_loss=6.2389 tok/s=32534
+[run ] smoke-D-low-lr0.004 (100,000,000 tokens)
+[done] smoke-D-low-lr0.004 val_loss=5.9820 tok/s=32535
+[run ] smoke-A-high-lr0.001 (100,000,000 tokens)
+[done] smoke-A-high-lr0.001 val_loss=5.8391 tok/s=81451
+[run ] smoke-A-high-lr0.002 (100,000,000 tokens)
+[done] smoke-A-high-lr0.002 val_loss=6.2176 tok/s=81305
+[run ] smoke-A-high-lr0.004 (100,000,000 tokens)
+[done] smoke-A-high-lr0.004 val_loss=6.2832 tok/s=81293
+[run ] smoke-B-high-lr0.001 (100,000,000 tokens)
+[done] smoke-B-high-lr0.001 val_loss=6.6969 tok/s=11102
+[run ] smoke-B-high-lr0.002 (100,000,000 tokens)
+[done] smoke-B-high-lr0.002 val_loss=6.3918 tok/s=11105
+[run ] smoke-B-high-lr0.004 (100,000,000 tokens)
+[done] smoke-B-high-lr0.004 val_loss=6.4475 tok/s=11208
+[run ] smoke-C-high-lr0.001 (100,000,000 tokens)
+[done] smoke-C-high-lr0.001 val_loss=6.0903 tok/s=14262
+[run ] smoke-C-high-lr0.002 (100,000,000 tokens)
